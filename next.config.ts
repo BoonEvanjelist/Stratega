@@ -10,15 +10,6 @@ const nextConfig: NextConfig = {
   // Compress responses
   compress: true,
 
-  // Skip TS type errors and ESLint during Vercel build
-  // (types are checked locally via tsc --noEmit)
-  typescript: {
-    ignoreBuildErrors: true,
-  },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-
   // External packages that must run in Node.js (not bundled for edge)
   serverExternalPackages: ["mongoose", "pdf-parse"],
 
@@ -28,4 +19,5 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
+
 
