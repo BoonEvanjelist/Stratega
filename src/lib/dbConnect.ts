@@ -1,12 +1,7 @@
 import mongoose from "mongoose";
 
-const MONGODB_URI = process.env.MONGODB_URI as string;
-
-if (!MONGODB_URI) {
-  throw new Error(
-    "Please define the MONGODB_URI environment variable in .env.local"
-  );
-}
+// NOTE: Do NOT read MONGODB_URI at module level — it throws during Next.js
+// static build when env vars are not yet injected. Read it inside dbConnect().
 
 /**
  * Global cached connection object.
@@ -28,6 +23,11 @@ if (!cached) {
 }
 
 async function dbConnect(): Promise<typeof mongoose> {
+  const MONGODB_URI = process.env.MONGODB_URI;
+  if (!MONGODB_URI) {
+    throw new Error("MONGODB_URI environment variable is not set");
+  }
+
   // Return existing connection immediately if available
   if (cached.conn) {
     return cached.conn;

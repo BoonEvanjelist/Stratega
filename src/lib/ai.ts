@@ -8,14 +8,10 @@
  */
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 
-const rawKey = process.env.GEMINI_API_KEY;
-
-if (!rawKey && process.env.NODE_ENV === "production") {
-  throw new Error("GEMINI_API_KEY environment variable is not set");
-}
-
+// NOTE: Do NOT throw at module level for missing env vars — it crashes the
+// Next.js static build. The SDK will fail naturally at runtime if key is absent.
 export const gemini = createGoogleGenerativeAI({
-  apiKey: rawKey ?? "missing-key-check-env",
+  apiKey: process.env.GEMINI_API_KEY ?? "missing-key-set-in-vercel-dashboard",
 });
 
 /**
