@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Github, Mail, MessageCircle, Lock, ArrowLeft } from "lucide-react";
+import { ExternalLink, Mail, MessageCircle, Lock, ArrowLeft } from "lucide-react";
 
 export default function SignupPage() {
   return (
@@ -99,7 +99,7 @@ export default function SignupPage() {
               onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.04)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"; }}
             >
               <div style={{ width: 36, height: 36, borderRadius: 10, background: "rgba(255,255,255,0.08)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                <Github size={17} color="#94a3b8" />
+                <ExternalLink size={17} color="#94a3b8" />
               </div>
               <div style={{ textAlign: "left", flex: 1 }}>
                 <p style={{ fontSize: 11, color: "#475569", margin: "0 0 2px", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em" }}>GitHub</p>
