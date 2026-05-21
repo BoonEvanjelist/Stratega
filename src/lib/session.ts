@@ -18,14 +18,19 @@ export interface SessionPayload {
 }
 
 // ── Secret key setup ─────────────────────────────────────────────────
-const rawSecret = process.env.SESSION_SECRET;
-if (!rawSecret) {
-  throw new Error("SESSION_SECRET environment variable is not set");
+// Lazy getter — resolved at runtime, not at module load time.
+// This prevents crashes during Next.js static page generation at build time.
+function getEncodedKey(): Uint8Array {
+  const rawSecret = process.env.SESSION_SECRET;
+  if (!rawSecret) {
+    throw new Error("SESSION_SECRET environment variable is not set");
+  }
+  return new TextEncoder().encode(rawSecret);
 }
-const encodedKey = new TextEncoder().encode(rawSecret);
 
 // ── Encrypt (sign JWT) ───────────────────────────────────────────────
 export async function encrypt(payload: SessionPayload): Promise<string> {
+  const encodedKey = getEncodedKey();
   return new SignJWT({ ...payload })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
@@ -39,6 +44,7 @@ export async function decrypt(
 ): Promise<SessionPayload | null> {
   if (!token) return null;
   try {
+    const encodedKey = getEncodedKey();
     const { payload } = await jwtVerify(token, encodedKey, {
       algorithms: ["HS256"],
     });

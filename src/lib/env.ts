@@ -3,8 +3,13 @@
  *
  * This utility enforces that all critical environment variables are present
  * before the application logic runs. It guarantees the application will crash
- * heavily and immediately during the build or startup phase if keys are missing,
- * rather than failing silently or causing unexpected behavior during runtime.
+ * heavily and immediately at RUNTIME if keys are missing, rather than failing
+ * silently or causing unexpected behavior.
+ *
+ * NOTE: validateEnv() is intentionally NOT called at module load time.
+ * Calling it at import time causes Next.js static generation to crash during
+ * `next build` because env vars are not always injected at that phase.
+ * Instead, call getEnv() from within request handlers or server actions.
  */
 
 interface EnvConfig {
@@ -21,10 +26,10 @@ function getEnvVar(key: string): string {
   return value;
 }
 
-export function validateEnv(): EnvConfig {
-  // We strictly validate only in production so as not to aggressively block
-  // simple local UI tweaks if a developer hasn't configured a full .env yet,
-  // but for Stratega, these 3 are inherently required for most backend features anyway.
+/**
+ * Returns validated env vars. Call this inside route handlers, not at module top level.
+ */
+export function getEnv(): EnvConfig {
   if (process.env.NODE_ENV === "production") {
     return {
       MONGODB_URI: getEnvVar("MONGODB_URI"),
@@ -32,8 +37,6 @@ export function validateEnv(): EnvConfig {
       GEMINI_API_KEY: getEnvVar("GEMINI_API_KEY"),
     };
   }
-
-  // Best-effort for development mode
   return {
     MONGODB_URI: process.env.MONGODB_URI || "",
     SESSION_SECRET: process.env.SESSION_SECRET || "",
@@ -41,4 +44,9 @@ export function validateEnv(): EnvConfig {
   };
 }
 
-export const env = validateEnv();
+// Keep validateEnv as an alias for backwards compatibility
+export const validateEnv = getEnv;
+
+// DO NOT export `env = validateEnv()` at module level — it crashes the build.
+// Use getEnv() inside your request handlers instead.
+
