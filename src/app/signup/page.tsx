@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { ExternalLink, Mail, MessageCircle, Lock, ArrowLeft } from "lucide-react";
 
